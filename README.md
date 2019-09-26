@@ -1,6 +1,6 @@
 # jtreceval
 
-A Java wrapper around the binaries for NIST's trec_eval (https://github.com/usnistgov/trec_eval) on various platforms. The trec_eval binaries are included in the jar file, so the jar is easy to use on a number of platforms without compiling.
+A Java wrapper around the binaries for NIST's trec_eval (https://github.com/usnistgov/trec_eval) and ndeval (https://github.com/trec-web/trec-web-2014/blob/master/src/eval/ndeval.c) and gdeval (https://trec.nist.gov/data/web/12/gdeval.pl) on various platforms. The binaries are included in the jar file, so the jar is easy to use on a number of platforms without compiling.
 
 Currently, we have the binaries for the following operating systems:
  * Linux, Intel 32bit, 64bit
