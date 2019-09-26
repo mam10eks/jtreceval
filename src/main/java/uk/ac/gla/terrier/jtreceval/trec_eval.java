@@ -178,7 +178,15 @@ public class trec_eval
 		return exit;
 	}
 	
-	
+	public double evaluateMeasure(String measure, File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {"-m", measure, qrels.toPath().toAbsolutePath().toString(), runFile.toPath().toAbsolutePath().toString()});
+		
+		if(output.length != 1 || !output[0][1].equals("all")) {
+			throw new RuntimeException("Format changed?");
+		}
+		
+		return Double.parseDouble(output[0][2]);
+	}
 	
 	/** Invokes trec_eval and displays the output to this process's STDOUT stream.
 	 * @param args trec_eval commandline arguments
