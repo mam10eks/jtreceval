@@ -10,7 +10,10 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
@@ -79,7 +82,7 @@ public class ndeval {
 			LineIterator it = IOUtils.lineIterator(new InputStreamReader(in));
 			while(it.hasNext())
 			{
-				output.add(it.next().split("\\s+"));
+				output.add(it.next().split(","));
 			}
 			p.waitFor();
 			int exit = p.exitValue();
@@ -91,8 +94,36 @@ public class ndeval {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public Map<String, Double> evaluate(File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {qrels.toString(), runFile.toString()});
+		String[] resultRow = output[output.length -1];
+		
+		if(!resultRow[1].equals("amean")) {
+			throw new RuntimeException("Format changed?" + output[1]);
+		}
+		
+		Map<String, Integer> fieldIndizes = new HashMap<String, Integer>();
+		
+		for(int i=2; i< output[0].length; i++) {
+			fieldIndizes.put(output[0][i], i);
+		}
+		
+		Map<String, Double> ret = new HashMap<String, Double>();
+		
+		for(Entry<String, Integer> measure : fieldIndizes.entrySet()) {
+			ret.put(measure.getKey(), Double.parseDouble(resultRow[measure.getValue()]));
+		}
+		
+		return ret;
+	}
 
 	private static String getExecName() {
 		return 	"ndeval-" + trec_eval.getOSShort() + "-" + System.getProperty("os.arch");
+	}
+	
+	public static void main(String[] args) {
+		ndeval ndeval = new ndeval();
+		System.out.println(ndeval.evaluate(new File("/tmp/tmp-qrel3976145828610178693/qrels"), new File("/tmp/tmp-unzipped3173560149087468956/tmp-unzipped")));
 	}
 }

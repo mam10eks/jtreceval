@@ -18,6 +18,8 @@ import org.apache.commons.io.LineIterator;
 public class gdeval {
 
 	private static int ERR = 3;
+	private static int NDCG = 2;
+	
 	
 	private static File gdeval = null;
 	
@@ -95,5 +97,35 @@ public class gdeval {
 		}
 
 		return Double.parseDouble(output[output.length-1][ERR]);
+	}
+	
+	public double err_10(File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {"-k", "10", qrels.toPath().toString(), runFile.toPath().toString()});
+		
+		if(!output[0][ERR].equals("err@10") || !output[output.length-1][1].equals("amean")) {
+			throw new RuntimeException("Format changed?" + output[0][ERR]);
+		}
+
+		return Double.parseDouble(output[output.length-1][ERR]);
+	}
+	
+	public double ndcg_20(File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {qrels.toPath().toString(), runFile.toPath().toString()});
+		
+		if(!output[0][NDCG].equals("ndcg@20") || !output[output.length-1][1].equals("amean")) {
+			throw new RuntimeException("Format changed?" + output[0][NDCG]);
+		}
+
+		return Double.parseDouble(output[output.length-1][NDCG]);
+	}
+	
+	public double ndcg_10(File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {"-k", "10", qrels.toPath().toString(), runFile.toPath().toString()});
+		
+		if(!output[0][NDCG].equals("ndcg@10") || !output[output.length-1][1].equals("amean")) {
+			throw new RuntimeException("Format changed?" + output[0][NDCG]);
+		}
+
+		return Double.parseDouble(output[output.length-1][NDCG]);
 	}
 }
