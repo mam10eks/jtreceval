@@ -178,8 +178,11 @@ public class trec_eval
 		return exit;
 	}
 	
-	public double evaluateMeasure(String measure, File qrels, File runFile) {
-		String[][] output = runAndGetOutput(new String[] {"-M", "1000", "-m", measure, qrels.toPath().toAbsolutePath().toString(), runFile.toPath().toAbsolutePath().toString()});
+	public double evaluateMeasure(String measure, File qrels, File runFile, String[] args) {
+		List<String> arguments = new ArrayList<String>(Arrays.asList(args));
+		arguments.addAll(Arrays.asList("-m", measure, qrels.toPath().toAbsolutePath().toString(), runFile.toPath().toAbsolutePath().toString()));
+		
+		String[][] output = runAndGetOutput(arguments.toArray(new String[arguments.size()]));
 		
 		if(output.length != 1 || !output[0][1].equals("all")) {
 			throw new RuntimeException("Format changed?");
