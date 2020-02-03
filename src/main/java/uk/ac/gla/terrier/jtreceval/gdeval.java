@@ -119,6 +119,24 @@ public class gdeval {
 		return Double.parseDouble(output[output.length-1][NDCG]);
 	}
 	
+	public EvalReport ndcg_20_report(File qrels, File runFile) {
+		String[][] output = runAndGetOutput(new String[] {qrels.toPath().toString(), runFile.toPath().toString()});
+		
+		if(!output[0][NDCG].equals("ndcg@20") || !output[output.length-1][1].equals("amean")) {
+			throw new RuntimeException("Format changed?" + output[0][NDCG]);
+		}
+
+		EvalReport ret = new EvalReport();
+		ret.amean = Double.parseDouble(output[output.length-1][NDCG]);
+		ret.scorePerTopic = new ArrayList<Double>();
+		
+		for(int i=1; i<output.length-1; i++) {
+			ret.scorePerTopic.add(Double.parseDouble(output[i][NDCG]));
+		}
+		
+		return ret;
+	}
+	
 	public double ndcg_10(File qrels, File runFile) {
 		String[][] output = runAndGetOutput(new String[] {"-k", "10", qrels.toPath().toString(), runFile.toPath().toString()});
 		
