@@ -71,7 +71,7 @@ public class trec_eval
 		return true;
 	}
 	
-	static File getTrecEvalBinary()
+	static synchronized File getTrecEvalBinary()
 	{
 		if (trec_eval_temp != null)
 			return trec_eval_temp;
@@ -115,7 +115,9 @@ public class trec_eval
 			throw new UnsupportedOperationException(e);
 		}
 		assert tempExec.exists() : "Exe file " + tempExec.toString() + " does not exist after creation";
-		return tempExec;
+		trec_eval_temp = tempExec;
+
+		return trec_eval_temp;
 	}
 
 	protected static String getExecName() {
