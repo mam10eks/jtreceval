@@ -193,6 +193,35 @@ public class trec_eval
 		return Double.parseDouble(output[0][2]);
 	}
 	
+
+	public EvalReport reportMeasure(String measure, File qrels, File runFile) {
+		String[] args = new String[] {"-M", "1000"};
+		
+		List<String> arguments = new ArrayList<String>(Arrays.asList(args));
+		arguments.addAll(Arrays.asList("-q", "-m", measure, qrels.toPath().toAbsolutePath().toString(), runFile.toPath().toAbsolutePath().toString()));
+		
+		String[][] output = runAndGetOutput(arguments.toArray(new String[arguments.size()]));
+		List<Double> scorePerTopic = new ArrayList<Double>();
+		
+		for(int i=0; i< output.length-1; i++) {
+			if(output[i].length != 3 || !output[i][0].equals(measure)) {
+				throw new RuntimeException("Format changed?");
+			}
+			
+			scorePerTopic.add(Double.parseDouble(output[i][2]));
+		}
+		
+		if(!output[output.length-1][1].equals("all")) {
+			throw new RuntimeException("Format changed?");
+		}
+		
+		EvalReport ret = new EvalReport();
+		ret.amean = Double.parseDouble(output[output.length-1][2]);
+		ret.scorePerTopic = scorePerTopic;
+		
+		return ret;
+	}
+	
 	/** Invokes trec_eval and displays the output to this process's STDOUT stream.
 	 * @param args trec_eval commandline arguments
 	 * @return exit code of trec_eval
